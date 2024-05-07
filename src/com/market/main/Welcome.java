@@ -1,4 +1,14 @@
+package com.market.main;
+
 import java.util.Scanner;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import com.market.exception.CartException;
+
+import com.market.bookitem.Book;
+import com.market.cart.Cart;
+import com.market.member.Admin;
+import com.market.member.User;
 
 public class Welcome {
 	
@@ -40,6 +50,7 @@ public class Welcome {
 	System.out.println("\t" + tagline);
 	
 	menuIntro();
+	
 	/*
 	 * System.out.println("************************************************");
 	 * System.out.println("1. 고객 정보 확인하기 \t5. 바구니에 항목 추가하기");
@@ -48,7 +59,7 @@ public class Welcome {
 	 * System.out.println("4. 영수증 표시하기 \t \t8. 종료");
 	 * System.out.println("************************************************");
 	 */
-	
+	try {
 	System.out.println("메뉴 번호를 선택하세요: ");
 	int choice = input.nextInt(); // 숫자만 입력
 	
@@ -56,8 +67,7 @@ public class Welcome {
 			System.out.println("1부터 9까지의 숫자를 입력하세요.");
 		} else {
 			switch(choice) {
-			case 1:
-				menuGuestInfo(userName, userPhone);
+			case 1 : menuGuestInfo(userName, userPhone);
 				break;
 			case 2:
 				menuCartItemList();
@@ -88,7 +98,17 @@ public class Welcome {
 				} //switch 문 끝
 			} //if-else 문 끝
 		} //while 문 끝
+	catch(CartException e) {
+		System.out.println(e.getMessage());
+		quit = true;
+	}
+	catch(Exception e) {
+		System.out.println("올바르지 않은 메뉴 선택으로 종료합니다.");
+		quit = true;
+		}
 	} //main 함수 끝
+}
+	
 	
 	/**
 	 *  설명 : Print Menu
@@ -143,10 +163,11 @@ public class Welcome {
 		}
 	}
 	
-public static void menuCartClear() {
+public static void menuCartClear() throws CartException {
 //	System.out.println("3. 장바구니 비우기");
 	if(mCart.mCartCount == 0)
-		System.out.println("장바구니에 항목이 없습니다.");
+		throw new CartException("장바구니에 항목이 없습니다.");
+//		System.out.println("장바구니에 항목이 없습니다.");
 	else {
 		System.out.println("장바구니의 모든 항목을 삭제하겠습니까? Y | N ");
 		Scanner input = new Scanner(System.in);
@@ -159,8 +180,52 @@ public static void menuCartClear() {
 	}
 	}
 
-public static void menuCartBill() {
-	System.out.println("4. 영수증 표시하기");
+public static void menuCartBill() throws CartException{
+//	System.out.println("4. 영수증 표시하기");
+	if(mCart.mCartCount == 0) 
+		throw new CartException("장바구니에 항목이 없습니다.");
+//		System.out.println("장바구니에 항목이 없습니다.");
+	
+	else {
+		System.out.println("배송받을 분은 고객 정보와 같습니까? Y | N");
+		Scanner input = new Scanner(System.in);
+		String str = input.nextLine();
+	
+	
+	if(str.toUpperCase().equals("Y")) {
+		System.out.println("배송지를 입력해주세요.");
+		String address = input.nextLine();
+		printBill(mUser.getName(), String.valueOf(mUser.getPhone()), address);
+	}
+	else {
+		System.out.print("배송받을 고객명을 입력하세요.");
+		String name = input.nextLine();
+		System.out.print("배송받을 고객의 연락처를 입력하세요.");
+		String phone = input.nextLine();
+		System.out.print("배송받을 고객의 배송지를 입력하세요.");
+		String address = input.nextLine();
+		printBill(name,phone,address);
+		}
+	}
+}
+public static void printBill(String name, String phone, String address) {
+	Date date = new Date();
+	SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+	String strDate = formatter.format(date);
+	System.out.println();
+	System.out.println("------------------배송받을 고객 정보------------------");
+	System.out.println("고객명 : " + name + "   \t\t연락처 : " + phone);
+	System.out.println("배송지 : " + address + "\t\t발송일 : " + strDate);
+	
+	mCart.printCart();
+	
+	int sum = 0;
+	for(int i =0; i < mCart.mCartCount; i++)
+		sum += mCart.mCartItem[i].getTotalPrice();
+	
+	System.out.println("\t\t\t주문 총금액 : " + sum + "원");
+	System.out.println("------------------------------------------------");
+	System.out.println();
 }
 
 public static void menuCartAddItem(Book[] bookList) {
@@ -224,10 +289,11 @@ public static void menuCartRemoveCount() {
 	System.out.println("6. 장바구니의 항목 수량 줄이기");
 }
 
-public static void menuCartRemoveItem() {
+public static void menuCartRemoveItem() throws CartException {
 //	System.out.println("7. 장바구니의 항목 삭제하기");
 	if(mCart.mCartCount == 0)
-		System.out.println("장바구니의 항목이 없습니다.");
+		throw new CartException("장바구니에 항목이 없습니다.");
+//		System.out.println("장바구니의 항목이 없습니다.");
 	else {
 		menuCartItemList();
 		boolean quit = false;
