@@ -76,4 +76,12 @@ public class Cart implements CartInterface {
 		mCartItem.remove(numId);
 		mCartCount = mCartItem.size();
 	}
+	
+	public ArrayList<CartItem> getmCartItem() {
+		return mCartItem;
+	}
+	
+	public void setmCartItem(ArrayList<CartItem> mCartItem) {
+		this.mCartItem = mCartItem;
+	}
 }
