@@ -11,7 +11,7 @@ public class UserInIt {
 		mUser = new User(name,phone);
 	}
 	
-	public static User germUser() {
+	public static User getmUser() {
 		return mUser;
 	}
 
