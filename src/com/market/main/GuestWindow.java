@@ -37,6 +37,7 @@ public class GuestWindow extends JFrame {
 		userPanel.add(userLabel);
 		add(userPanel);
 		
+		
 		JPanel titlePanel = new JPanel();
 		titlePanel.setBounds(0, 350, 1000, 50);
 		add(titlePanel);
